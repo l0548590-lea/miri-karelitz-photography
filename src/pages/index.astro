@@ -406,6 +406,13 @@ const testimonialsExtra = [
 
         <!-- Form -->
         <form id="contact-form" class="space-y-4" novalidate>
+
+          <!-- Honeypot anti-spam (hidden from real users) -->
+          <div style="display:none" aria-hidden="true">
+            <input type="text" name="website" id="honeypot" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <!-- Name -->
           <div>
             <label class="block text-white/80 text-sm font-sans mb-2 font-semibold" for="name">
               שם מלא *
@@ -414,12 +421,13 @@ const testimonialsExtra = [
               type="text"
               id="name"
               name="name"
-              required
               placeholder="הכניסי את שמך המלא"
-              class="w-full bg-white/20 border border-white/30 rounded-2xl px-5 py-3 text-white placeholder-white/50 font-sans focus:outline-none focus:border-white focus:bg-white/30 transition-all"
+              class="input-field w-full bg-white/20 border border-white/30 rounded-2xl px-5 py-3 text-white placeholder-white/50 font-sans focus:outline-none focus:border-white focus:bg-white/30 transition-all"
             />
+            <span id="err-name" class="hidden text-yellow-200 text-xs mt-1 block font-sans">⚠ אנא הכניסי שם מלא</span>
           </div>
 
+          <!-- Phone -->
           <div>
             <label class="block text-white/80 text-sm font-sans mb-2 font-semibold" for="phone">
               טלפון *
@@ -428,25 +436,28 @@ const testimonialsExtra = [
               type="tel"
               id="phone"
               name="phone"
-              required
               placeholder="050-000-0000"
-              class="w-full bg-white/20 border border-white/30 rounded-2xl px-5 py-3 text-white placeholder-white/50 font-sans focus:outline-none focus:border-white focus:bg-white/30 transition-all"
+              class="input-field w-full bg-white/20 border border-white/30 rounded-2xl px-5 py-3 text-white placeholder-white/50 font-sans focus:outline-none focus:border-white focus:bg-white/30 transition-all"
             />
+            <span id="err-phone" class="hidden text-yellow-200 text-xs mt-1 block font-sans">⚠ אנא הכניסי מספר טלפון תקין</span>
           </div>
 
+          <!-- Email -->
           <div>
             <label class="block text-white/80 text-sm font-sans mb-2 font-semibold" for="email">
-              אימייל
+              אימייל <span class="text-white/50 font-normal">(לקבלת מייל אישור)</span>
             </label>
             <input
               type="email"
               id="email"
               name="email"
               placeholder="your@email.com"
-              class="w-full bg-white/20 border border-white/30 rounded-2xl px-5 py-3 text-white placeholder-white/50 font-sans focus:outline-none focus:border-white focus:bg-white/30 transition-all"
+              class="input-field w-full bg-white/20 border border-white/30 rounded-2xl px-5 py-3 text-white placeholder-white/50 font-sans focus:outline-none focus:border-white focus:bg-white/30 transition-all"
             />
+            <span id="err-email" class="hidden text-yellow-200 text-xs mt-1 block font-sans">⚠ כתובת אימייל לא תקינה</span>
           </div>
 
+          <!-- Message -->
           <div>
             <label class="block text-white/80 text-sm font-sans mb-2 font-semibold" for="message">
               סוג הצילום / הודעה
@@ -460,27 +471,42 @@ const testimonialsExtra = [
             ></textarea>
           </div>
 
+          <!-- General error -->
+          <p id="form-error" class="hidden text-yellow-200 text-sm text-center font-sans bg-white/10 rounded-xl px-4 py-2"></p>
+
+          <!-- Submit button -->
           <button
             type="submit"
-            class="w-full bg-white text-brand-red font-bold text-lg py-4 rounded-2xl shadow-xl hover:bg-brand-pink hover:scale-[1.02] transition-all duration-300 mt-2"
+            id="submit-btn"
+            class="w-full bg-white text-brand-red font-bold text-lg py-4 rounded-2xl shadow-xl hover:bg-brand-pink hover:scale-[1.02] transition-all duration-300 mt-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100"
           >
-            שלחי לי הודעה ♥
+            <span id="btn-text">שלחי לי הודעה ♥</span>
+            <span id="btn-loading" class="hidden items-center justify-center gap-2">
+              <svg class="animate-spin h-5 w-5 text-brand-red inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+              </svg>
+              שולח...
+            </span>
           </button>
         </form>
 
         <!-- Success message (hidden) -->
-        <div
-          id="success-msg"
-          class="hidden text-center py-10"
-        >
-          <div class="text-6xl mb-4 animate-bounce">♥</div>
-          <h3 class="text-white text-2xl font-serif mb-3"
-              style="font-family: 'Noto Serif Hebrew', serif;">
+        <div id="success-msg" class="hidden text-center py-10">
+          <div class="text-7xl mb-5" style="animation: heartbeat 1.4s ease-in-out infinite;">♥</div>
+          <h3 class="text-white text-2xl font-serif mb-3" style="font-family: 'Noto Serif Hebrew', serif;">
             תודה! נחזור אליך בהקדם
           </h3>
-          <p class="text-white/70 font-sans text-sm">
-            קיבלנו את פנייתך ונחזור אליך תוך 24 שעות
+          <p class="text-white/80 font-sans text-base leading-relaxed">
+            קיבלנו את פנייתך ונחזור אליך תוך 24 שעות.<br/>
+            <span class="text-white/60 text-sm">שלחנו לך מייל אישור לכתובת שהזנת</span>
           </p>
+          <button
+            id="reset-form-btn"
+            class="mt-6 text-white/60 hover:text-white underline text-sm font-sans transition-colors"
+          >
+            שליחת פנייה נוספת
+          </button>
         </div>
       </div>
     </div>
@@ -588,22 +614,143 @@ const testimonialsExtra = [
     showMoreBtn.style.display = 'none';
   });
 
+  // ===== EmailJS config =====
+  // הכנסי את הערכים שלך מ-EmailJS:
+  const EMAILJS_PUBLIC_KEY         = 'YOUR_PUBLIC_KEY';
+  const EMAILJS_SERVICE_ID         = 'YOUR_SERVICE_ID';
+  const EMAILJS_TEMPLATE_NOTIFY    = 'YOUR_TEMPLATE_NOTIFY_ID';    // מייל למירי
+  const EMAILJS_TEMPLATE_AUTOREPLY = 'YOUR_TEMPLATE_AUTOREPLY_ID'; // מייל ללקוחה
+
+  // Initialize EmailJS
+  (window as any).emailjs?.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
   // ===== Contact form =====
-  const form = document.getElementById('contact-form') as HTMLFormElement;
-  const successMsg = document.getElementById('success-msg');
+  const form        = document.getElementById('contact-form') as HTMLFormElement;
+  const successMsg  = document.getElementById('success-msg');
+  const submitBtn   = document.getElementById('submit-btn') as HTMLButtonElement;
+  const btnText     = document.getElementById('btn-text');
+  const btnLoading  = document.getElementById('btn-loading');
+  const formError   = document.getElementById('form-error');
 
-  form?.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = (document.getElementById('name') as HTMLInputElement).value.trim();
+  // Track form open time for basic spam detection
+  const formOpenTime = Date.now();
+
+  // ---- Helpers ----
+  const phoneRegex = /^(\+972|0)(5[0-9]|[2-9][0-9]?)[\-\s]?\d{3}[\-\s]?\d{4}$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  function showError(id: string, show: boolean) {
+    document.getElementById(id)?.classList.toggle('hidden', !show);
+    const input = document.getElementById(id.replace('err-', '')) as HTMLInputElement;
+    if (input) {
+      input.style.borderColor = show ? 'rgb(253 224 71)' : '';
+    }
+  }
+
+  function setLoading(loading: boolean) {
+    submitBtn.disabled = loading;
+    btnText?.classList.toggle('hidden', loading);
+    btnLoading?.classList.toggle('hidden', !loading);
+    btnLoading?.classList.toggle('flex', loading);
+  }
+
+  function showFormError(msg: string) {
+    if (formError) { formError.textContent = msg; formError.classList.remove('hidden'); }
+  }
+
+  function hideFormError() {
+    formError?.classList.add('hidden');
+  }
+
+  // ---- Validation ----
+  function validate(): boolean {
+    const name  = (document.getElementById('name')  as HTMLInputElement).value.trim();
     const phone = (document.getElementById('phone') as HTMLInputElement).value.trim();
+    const email = (document.getElementById('email') as HTMLInputElement).value.trim();
 
-    if (!name || !phone) {
-      alert('אנא מלאי שם וטלפון');
+    let valid = true;
+
+    if (name.length < 2) { showError('err-name', true);  valid = false; }
+    else                  { showError('err-name', false); }
+
+    if (!phoneRegex.test(phone)) { showError('err-phone', true);  valid = false; }
+    else                         { showError('err-phone', false); }
+
+    if (email && !emailRegex.test(email)) { showError('err-email', true);  valid = false; }
+    else                                  { showError('err-email', false); }
+
+    return valid;
+  }
+
+  // ---- Live validation on blur ----
+  ['name','phone','email'].forEach(id => {
+    document.getElementById(id)?.addEventListener('blur', validate);
+  });
+
+  // ---- Submit ----
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    hideFormError();
+
+    // Spam checks
+    const honeypot = (document.getElementById('honeypot') as HTMLInputElement)?.value;
+    if (honeypot) return; // bot filled hidden field
+
+    if (Date.now() - formOpenTime < 2000) return; // submitted too fast
+
+    const lastSent = localStorage.getItem('mk_last_sent');
+    if (lastSent && Date.now() - Number(lastSent) < 60_000) {
+      showFormError('אנא המתיני דקה לפני שליחה נוספת');
       return;
     }
 
-    form.style.display = 'none';
-    successMsg?.classList.remove('hidden');
+    if (!validate()) return;
+
+    const name    = (document.getElementById('name')    as HTMLInputElement).value.trim();
+    const phone   = (document.getElementById('phone')   as HTMLInputElement).value.trim();
+    const email   = (document.getElementById('email')   as HTMLInputElement).value.trim();
+    const message = (document.getElementById('message') as HTMLTextAreaElement).value.trim();
+
+    setLoading(true);
+
+    try {
+      const ejs = (window as any).emailjs;
+
+      // 1. מייל התראה למירי
+      await ejs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_NOTIFY, {
+        from_name:  name,
+        from_phone: phone,
+        from_email: email || 'לא סופק',
+        message:    message || 'לא הוזנה הודעה',
+        reply_to:   email || 'mirizilum@gmail.com',
+      });
+
+      // 2. מייל אישור אוטומטי ללקוחה (רק אם הזינה אימייל)
+      if (email) {
+        await ejs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_AUTOREPLY, {
+          to_name:  name,
+          to_email: email,
+        });
+      }
+
+      localStorage.setItem('mk_last_sent', String(Date.now()));
+      form.style.display = 'none';
+      successMsg?.classList.remove('hidden');
+
+    } catch (err) {
+      console.error('EmailJS error:', err);
+      showFormError('אירעה שגיאה בשליחה. אנא נסי שוב או צרי קשר בטלפון.');
+      setLoading(false);
+    }
+  });
+
+  // ---- Reset form ----
+  document.getElementById('reset-form-btn')?.addEventListener('click', () => {
+    form.reset();
+    form.style.display = '';
+    successMsg?.classList.add('hidden');
+    setLoading(false);
+    hideFormError();
   });
 
   // ===== Scroll reveal =====
